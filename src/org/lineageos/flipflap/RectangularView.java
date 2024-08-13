@@ -27,6 +27,10 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.widget.Toast;
+import android.util.Log;
 
 public class RectangularView extends FlipFlapView {
     private static final String TAG = "RectangularView";
@@ -44,6 +48,7 @@ public class RectangularView extends FlipFlapView {
     private boolean mCallActive;
     private boolean mAlarmActive;
     private boolean mNeedsSmallView;
+    private GestureDetector mGestureDetector;
 
     public RectangularView(Context context) {
         super(context);
@@ -76,6 +81,69 @@ public class RectangularView extends FlipFlapView {
         if ((height - top) < (resources.getSystem().getDisplayMetrics().heightPixels / 3)) {
             mNeedsSmallView = true;
         }
+        mGestureDetector = new GestureDetector(context, new GestureListener());
+    }
+    
+       @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return mGestureDetector.onTouchEvent(event) || super.onTouchEvent(event);
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            float diffX = e2.getX() - e1.getX();
+            float diffY = e2.getY() - e1.getY();
+            
+            // Detect down swipe
+            if (diffY > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                Log.d(TAG, "Down swipe detected");
+                showNotifications();
+                return true;
+            }
+            // Detect up swipe
+            else if (-diffY > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                Log.d(TAG, "Up swipe detected");
+                handleUpSwipe();
+                return true;
+            }
+            // Detect right swipe
+            else if (diffX > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                Log.d(TAG, "Right swipe detected");
+                handleRightSwipe();
+                return true;
+            }
+            // Detect left swipe
+            else if (-diffX > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                Log.d(TAG, "Left swipe detected");
+                handleLeftSwipe();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private void showNotifications() {
+        Log.d(TAG, "Handling down swipe.");
+        // Add logic for down swipe
+    }
+
+    private void handleRightSwipe() {
+        Log.d(TAG, "Handling right swipe.");
+        // Add logic for right swipe
+    }
+
+    private void handleLeftSwipe() {
+        Log.d(TAG, "Handling left swipe.");
+        // Add logic for left swipe
+    }
+
+    private void handleUpSwipe() {
+        Log.d(TAG, "Handling up swipe.");
+        // Add logic for up swipe (if needed)
     }
 
     @Override
